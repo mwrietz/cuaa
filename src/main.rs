@@ -20,8 +20,7 @@ fn main() {
 
     if delete_flag == true {
         println!("\ndeleting...");
-    }
-    else {
+    } else {
         println!("\ndry run...");
     }
 
@@ -39,7 +38,7 @@ fn process_files(flag: bool) {
                 if flag == true {
                     fs::remove_file(path).expect("File delete failed");
                 }
-            },
+            }
             Err(e) => println!("{:?}", e),
         }
     }
@@ -53,4 +52,3 @@ fn usage() {
     println!("    --dry_run     Dry run - display files without deleting");
     println!("    --delete      Delete files\n");
 }
-
