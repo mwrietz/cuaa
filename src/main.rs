@@ -4,6 +4,8 @@ use std::fs;
 use std::process;
 
 fn main() {
+    println!("Cleanup After Apple: cuaa v{}", env!("CARGO_PKG_VERSION"));
+
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
         usage();
@@ -16,7 +18,6 @@ fn main() {
         delete_flag = true;
     }
 
-    println!("Cleanup After Apple: cuaa v{}", env!("CARGO_PKG_VERSION"));
     if delete_flag == true {
         println!("\ndeleting...");
     }
