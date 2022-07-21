@@ -46,7 +46,7 @@ fn process_files(flag: bool) {
 }
 
 fn usage() {
-    println!("Invalid arguments provided...\n");
+    println!("\nInvalid arguments provided...\n");
     println!("USAGE:");
     println!("    ./cuaa [OPTION]\n");
     println!("OPTIONS:");
