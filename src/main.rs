@@ -5,6 +5,7 @@ use std::fs;
 use std::process;
 
 mod ui;
+mod ghrs;
 
 fn main() {
     println!();
@@ -14,6 +15,7 @@ fn main() {
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
         ui::usage();
+        ghrs::check_version().expect("check_version error");
         process::exit(1);
     }
 
@@ -30,6 +32,7 @@ fn main() {
     }
 
     process_files(delete_flag);
+    ghrs::check_version().expect("check_version error");
 }
 
 fn process_files(flag: bool) {
