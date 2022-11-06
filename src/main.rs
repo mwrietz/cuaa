@@ -1,14 +1,19 @@
 use glob::glob;
+use colored::Colorize;
 use std::env;
 use std::fs;
 use std::process;
 
+mod ui;
+
 fn main() {
-    println!("Cleanup After Apple: cuaa v{}", env!("CARGO_PKG_VERSION"));
+    println!();
+    println!("Cleanup After Apple");
+    println!("{} v{}", ui::get_prog_name().yellow().bold(), env!("CARGO_PKG_VERSION"));
 
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
-        usage();
+        ui::usage();
         process::exit(1);
     }
 
@@ -42,13 +47,4 @@ fn process_files(flag: bool) {
             Err(e) => println!("{:?}", e),
         }
     }
-}
-
-fn usage() {
-    println!("\nInvalid arguments provided...\n");
-    println!("USAGE:");
-    println!("    ./cuaa [OPTION]\n");
-    println!("OPTIONS:");
-    println!("    --dry_run     Dry run - display files without deleting");
-    println!("    --delete      Delete files\n");
 }
