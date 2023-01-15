@@ -1,7 +1,8 @@
 // ui.rs
 
-use std::env;
+//use std::env;
 
+/*
 pub fn get_prog_name() -> String {
     let prog_name = env::current_exe()
         .expect("Can't get the exec path")
@@ -11,6 +12,7 @@ pub fn get_prog_name() -> String {
         .into_owned();
     prog_name
 }
+*/
 
 pub fn usage() {
     println!("\nInvalid arguments provided...\n");
