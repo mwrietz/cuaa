@@ -19,6 +19,6 @@ pub fn usage() {
     println!("USAGE:");
     println!("    ./cuaa [OPTION]\n");
     println!("OPTIONS:");
-    println!("    --dry_run     Dry run - display files without deleting");
+    println!("    --dry-run     Dry run - display files without deleting");
     println!("    --delete      Delete files\n");
 }
