@@ -15,10 +15,10 @@ pub fn get_prog_name() -> String {
 */
 
 pub fn usage() {
-    println!("\nInvalid arguments provided...\n");
-    println!("USAGE:");
-    println!("    ./cuaa [OPTION]\n");
-    println!("OPTIONS:");
-    println!("    --dry-run     Dry run - display files without deleting");
-    println!("    --delete      Delete files\n");
+    println!("\n\n    Invalid arguments provided...\n");
+    println!("    USAGE:");
+    println!("        ./cuaa [OPTION]\n");
+    println!("    OPTIONS:");
+    println!("        --dry-run     Dry run - display files without deleting");
+    println!("        --delete      Delete files\n");
 }
