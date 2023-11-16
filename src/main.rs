@@ -3,13 +3,17 @@ use std::env;
 use std::fs;
 use std::process;
 
-mod ui;
 mod tui_gen;
+mod ui;
 
 fn main() {
     println!();
     println!("Cleanup After Apple");
-    let buffer = format!("{} v{}", tui_gen::get_prog_name(), env!("CARGO_PKG_VERSION"));
+    let buffer = format!(
+        "{} v{}",
+        tui_gen::get_prog_name(),
+        env!("CARGO_PKG_VERSION")
+    );
     tui_gen::print_color_bold(&buffer, "YELLOW");
 
     let args: Vec<String> = env::args().collect();
@@ -24,7 +28,7 @@ fn main() {
         delete_flag = true;
     }
 
-    if delete_flag == true {
+    if delete_flag {
         println!("\ndeleting...");
     } else {
         println!("\ndry run...");
@@ -41,7 +45,7 @@ fn process_files(flag: bool) {
         match entry {
             Ok(path) => {
                 println!("{:?}", path.display());
-                if flag == true {
+                if flag {
                     fs::remove_file(path).expect("File delete failed");
                 }
             }
