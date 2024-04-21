@@ -1,33 +1,28 @@
 #![allow(dead_code)]
 
-//use colored::Colorize;
 use crossterm::{
     cursor, execute,
     style::{Color, Print, ResetColor, SetForegroundColor, Stylize},
+    terminal::{Clear, ClearType},
 };
 use getch::Getch;
 use std::env;
 use std::io::{stdout, Write};
 
-fn clr(c: &str) -> Color {
-    let c_upper: &str = &c.to_uppercase();
-    match c_upper {
-        "RED" => Color::Red,
-        "BLUE" => Color::Blue,
-        "CYAN" => Color::Cyan,
-        "GREEN" => Color::Green,
-        "GREY" => Color::Grey,
-        "YELLOW" => Color::Yellow,
-        "MAGENTA" => Color::Magenta,
-        _ => Color::White,
-    }
+pub struct MsgLine {
+    pub msg: String,
+    pub color: Color,
 }
 
 pub fn cls() {
     std::process::Command::new("clear").status().unwrap();
 }
 
-pub fn cmove(x: usize, y: usize) {
+pub fn clear_line() {
+    execute!(stdout(), Clear(ClearType::CurrentLine)).unwrap();
+}
+
+pub fn cursor_move(x: usize, y: usize) {
     execute!(stdout(), cursor::MoveTo(x as u16, y as u16)).unwrap();
 }
 
@@ -41,9 +36,9 @@ pub fn get_prog_name() -> String {
     prog_name
 }
 
-pub fn horiz_line(color: &str) {
-    for _i in 0..80 {
-        //print!("{}", "─".color(color).bold());
+pub fn horiz_line(color: Color) {
+    let (width, _) = tsize();
+    for _i in 0..width {
         print_color_bold("─", color);
     }
     println!();
@@ -52,44 +47,41 @@ pub fn horiz_line(color: &str) {
 pub fn pause() {
     let (w, h) = tsize();
     let clear_message = "                            ";
-    //let message = "Press any key to continue...".blue();
     let message = "Press any key to continue...";
     let message_len: usize = message.len();
-    cmove((w - message_len) / 2, h - 2);
-    //print!("{}", message);
-    print_color(message, "BLUE");
+    cursor_move((w - message_len) / 2, h - 2);
+    print_color(message, Color::DarkBlue);
     std::io::stdout().flush().unwrap();
     let g = Getch::new();
     let _keypress = g.getch().unwrap();
-    cmove((w - message_len) / 2, h - 2);
+    cursor_move((w - message_len) / 2, h - 2);
     print!("{}", clear_message);
 }
 
-pub fn print_color(my_str: &str, color: &str) {
+pub fn print_color(my_str: &str, color: Color) {
     execute!(
         stdout(),
-        SetForegroundColor(clr(color)),
+        SetForegroundColor(color),
         Print(my_str),
         ResetColor
     )
     .expect("print_color error");
 }
 
-pub fn print_color_bold(my_str: &str, color: &str) {
+pub fn print_color_bold(my_str: &str, color: Color) {
     execute!(
         stdout(),
-        SetForegroundColor(clr(color)),
+        SetForegroundColor(color),
         Print(my_str.bold()),
         ResetColor
     )
     .expect("print_color_bold error");
 }
 
-pub fn print_title(title_string: &str, color: &str) {
+pub fn print_title(title_string: &str, color: Color) {
     println!();
     for c in title_string.chars() {
         print!(" ");
-        //print!("{}", c.to_string().color(color).bold());
         print_color_bold(&c.to_string(), color);
     }
     println!();
@@ -97,25 +89,72 @@ pub fn print_title(title_string: &str, color: &str) {
     println!();
 }
 
-pub fn splash_screen(line1: &str, line2: &str) {
-    //const VERSION: &str = env!("CARGO_PKG_VERSION");
+// *****************************
+// splash() usage:
+//
+// use crossterm::style::Color;
+// mod tui_gen;
+// use tui_gen::MsgLine;
+//
+// -----------------------------
+//
+// let orange = Color::Rgb { r: 255, g: 135, b: 0 };
+//
+// let mut msg: Vec<MsgLine> = vec![];
+// msg.push( MsgLine{ msg: "P R O G R A M   N A M E".to_string(), color: Color::DarkBlue} );
+// msg.push( MsgLine{ msg: "".to_string(), color: Color::White} );
+// msg.push( MsgLine{ msg: "v0.1.3".to_string(), color: orange } );
+//
+// tui_gen::splash(msg);
+//
+// *****************************
 
+pub fn splash(msglines: Vec<MsgLine>) {
     cls();
     let (width, height) = tsize();
+    let num_lines = msglines.len();
 
-    let line1_length: usize = line1.len();
-    cmove(width / 2 - line1_length / 2, height / 2 - 1);
-    //println!("{}", line1.bold());
-    print_color_bold(line1, "WHITE");
+    let mut line_pos = height / 2 - num_lines / 2;
 
-    let line2_length: usize = line2.len();
-    cmove(width / 2 - line2_length / 2, height / 2 + 1);
-    println!("{}", line2);
+    for line in msglines {
+        let line_len = line.msg.len();
+        cursor_move(width / 2 - line_len / 2, line_pos);
+        print_color_bold(&line.msg, line.color);
+        line_pos += 1;
+    }
 
     execute!(stdout(), cursor::Hide).unwrap();
 
     // pause for splash screen
-    //let one_sec = std::time::Duration::from_millis(1000);
+    let dur = std::time::Duration::new(2, 0);
+    std::thread::sleep(dur);
+    cls();
+
+    execute!(stdout(), cursor::Show).unwrap();
+}
+
+pub fn splash_screen(line1: &str, line2: &str) {
+    cls();
+    let (width, height) = tsize();
+
+    let line1_length: usize = line1.len();
+    cursor_move(width / 2 - line1_length / 2, height / 2 - 1);
+    print_color_bold(line1, Color::DarkBlue);
+
+    let line2_length: usize = line2.len();
+    cursor_move(width / 2 - line2_length / 2, height / 2 + 1);
+    print_color_bold(
+        line2,
+        Color::Rgb {
+            r: 255,
+            g: 135,
+            b: 0,
+        },
+    );
+
+    execute!(stdout(), cursor::Hide).unwrap();
+
+    // pause for splash screen
     let dur = std::time::Duration::new(2, 0);
     std::thread::sleep(dur);
     cls();
@@ -156,7 +195,7 @@ impl TermStat {
         if y > (self.height - 5) {
             pause();
             cls();
-            cmove(0, 0);
+            cursor_move(0, 0);
         }
     }
 }

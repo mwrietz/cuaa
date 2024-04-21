@@ -3,10 +3,12 @@ use std::env;
 use std::fs;
 use std::process;
 
+use crossterm::style::Color;
+
 mod tui_gen;
-mod ui;
 
 fn main() {
+
     println!();
     println!("Cleanup After Apple");
     let buffer = format!(
@@ -14,11 +16,11 @@ fn main() {
         tui_gen::get_prog_name(),
         env!("CARGO_PKG_VERSION")
     );
-    tui_gen::print_color_bold(&buffer, "YELLOW");
+    tui_gen::print_color_bold(&buffer, Color::DarkYellow);
 
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
-        ui::usage();
+        usage();
         process::exit(1);
     }
 
@@ -52,4 +54,13 @@ fn process_files(flag: bool) {
             Err(e) => println!("{:?}", e),
         }
     }
+}
+
+fn usage() {
+    println!("\n\n    Invalid arguments provided...\n");
+    println!("    USAGE:");
+    println!("        ./cuaa [OPTION]\n");
+    println!("    OPTIONS:");
+    println!("        --dry-run     Dry run - display files without deleting");
+    println!("        --delete      Delete files\n");
 }
