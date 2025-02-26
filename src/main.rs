@@ -1,14 +1,14 @@
 use glob::glob;
 use std::env;
 use std::fs;
+use std::io;
 use std::process;
 
 use crossterm::style::Color;
 
 mod tui_gen;
 
-fn main() {
-
+fn main() -> io::Result<()> {
     println!();
     println!("Cleanup After Apple");
     let buffer = format!(
@@ -36,24 +36,31 @@ fn main() {
         println!("\ndry run...");
     }
 
-    process_files(delete_flag);
+    let deleted_count = process_files(delete_flag)?;
+    println!("file count: {}", deleted_count);
+
+    Ok(())
 }
 
-fn process_files(flag: bool) {
-    let cwd = env::current_dir().unwrap();
+fn process_files(delete_flag: bool) -> io::Result<usize> {
+    let mut count = 0;
+    let cwd = env::current_dir()?;
     let fpath = cwd.join("**/.DS_Store");
 
     for entry in glob(&fpath.display().to_string()).expect("Failed to read glob pattern") {
+        count += 1;
         match entry {
             Ok(path) => {
                 println!("{:?}", path.display());
-                if flag {
-                    fs::remove_file(path).expect("File delete failed");
+                if delete_flag {
+                    fs::remove_file(path)?;
                 }
             }
             Err(e) => println!("{:?}", e),
         }
     }
+
+    Ok(count)
 }
 
 fn usage() {
